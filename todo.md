@@ -1,0 +1,164 @@
+# PartsBay - Car Parts Marketplace TODO
+
+## Core Features
+
+### Authentication & User Management
+- [ ] User authentication with buyer/seller roles
+- [ ] Seller registration and role assignment
+- [ ] User profile management
+- [ ] Admin user management interface
+
+### Shop Management (Seller Features)
+- [ ] Shop profile creation and editing
+- [ ] Shop dashboard for sellers
+- [ ] Shop profile visibility and public pages
+- [ ] Shop ratings and review display
+
+### Product Listings & Inventory
+- [ ] Create listings with title, description, price, condition
+- [ ] Edit and delete listings
+- [ ] Multi-photo upload for listings
+- [ ] Listing compatibility details (make, model, year)
+- [ ] Product detail pages with image gallery
+- [ ] Seller info display on listings
+
+### Categories & Organization
+- [ ] Category system (Engine, Brakes, Suspension, Electrical, Body, Interior, etc.)
+- [ ] Category browsing interface
+- [ ] Category filtering in search
+
+### Search & Filtering
+- [ ] Advanced search by keyword
+- [ ] Filter by category
+- [ ] Filter by car make/model/year
+- [ ] Filter by price range
+- [ ] Filter by condition (new/used)
+- [ ] Search results display
+
+### Shopping Cart & Checkout
+- [ ] Shopping cart functionality
+- [ ] Cart item management (add, remove, update quantity)
+- [ ] Checkout flow
+- [ ] Order placement
+
+### Orders & Order History
+- [ ] Order creation and tracking
+- [ ] Buyer order history
+- [ ] Seller order management
+- [ ] Order status updates
+
+### Payments (Stripe)
+- [ ] Stripe integration setup (not connected to live)
+- [ ] Payment processing flow
+- [ ] Order confirmation after payment
+- [ ] Payment status tracking
+
+### Reviews & Ratings
+- [ ] Review system for buyers
+- [ ] Rating system (1-5 stars)
+- [ ] Review display on seller profiles
+- [ ] Seller ratings calculation
+
+### Notifications
+- [ ] Seller notification on new orders
+- [ ] Buyer notification on order status updates
+- [ ] Email notification system
+
+### Admin Panel
+- [ ] User management interface
+- [ ] Shop management interface
+- [ ] Listing management interface
+- [ ] Reported content management
+- [ ] Analytics dashboard
+
+### Homepage & Discovery
+- [ ] Hero section with search bar
+- [ ] Featured listings display
+- [ ] Top categories showcase
+- [ ] Navigation menu
+
+### Multi-Photo Upload
+- [ ] Photo upload functionality
+- [ ] Image storage and management
+- [ ] Image gallery on listing pages
+- [ ] Photo validation and optimization
+
+## Technical Implementation
+
+### Database Schema
+- [ ] Users table with roles
+- [ ] Shops table
+- [ ] Listings table
+- [ ] ListingPhotos table
+- [ ] Categories table
+- [ ] CartItems table
+- [ ] Orders table
+- [ ] OrderItems table
+- [ ] Reviews table
+- [ ] Notifications table
+
+### Backend APIs
+- [ ] Auth routers (login, logout, register)
+- [ ] User routers (profile, settings)
+- [ ] Shop routers (CRUD, profile)
+- [ ] Listing routers (CRUD, search, filter)
+- [ ] Category routers
+- [ ] Cart routers
+- [ ] Order routers
+- [ ] Review routers
+- [ ] Admin routers
+- [ ] Notification routers
+- [ ] Stripe routers
+
+### Frontend Pages
+- [ ] Home page
+- [ ] Auth pages (login, register, role selection)
+- [ ] Browse/Search page
+- [ ] Listing detail page
+- [ ] Shop profile page
+- [ ] Cart page
+- [ ] Checkout page
+- [ ] Order history page
+- [ ] Seller dashboard
+- [ ] Admin dashboard
+- [ ] User profile page
+- [ ] 404 page
+
+### Frontend Components
+- [ ] Navigation header
+- [ ] Footer
+- [ ] Search bar
+- [ ] Filter sidebar
+- [ ] Listing card
+- [ ] Image gallery
+- [ ] Cart item card
+- [ ] Order card
+- [ ] Review card
+- [ ] Rating display
+- [ ] Form components
+
+### Design & Branding
+- [ ] Logo design
+- [ ] Hero image
+- [ ] Category icons
+- [ ] Color palette (elegant, premium)
+- [ ] Typography system
+- [ ] Component library styling
+
+### Testing
+- [ ] Backend API tests
+- [ ] Frontend component tests
+- [ ] Integration tests
+- [ ] Payment flow tests
+
+### Deployment & DevOps
+- [ ] GitHub repository setup
+- [ ] Automated daily commits (3x per day)
+- [ ] Environment configuration
+- [ ] Production deployment
+
+## Status Summary
+- Total items: 120+
+- Completed: 0
+- In progress: 0
+- Pending: 120+
