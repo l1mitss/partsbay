@@ -86,34 +86,34 @@
 ## Technical Implementation
 
 ### Database Schema
-- [ ] Users table with roles
-- [ ] Shops table
-- [ ] Listings table
-- [ ] ListingPhotos table
-- [ ] Categories table
-- [ ] CartItems table
-- [ ] Orders table
-- [ ] OrderItems table
-- [ ] Reviews table
-- [ ] Notifications table
+- [x] Users table with roles
+- [x] Shops table
+- [x] Listings table
+- [x] ListingPhotos table
+- [x] Categories table
+- [x] CartItems table
+- [x] Orders table
+- [x] OrderItems table
+- [x] Reviews table
+- [x] Notifications table
 
 ### Backend APIs
-- [ ] Auth routers (login, logout, register)
-- [ ] User routers (profile, settings)
-- [ ] Shop routers (CRUD, profile)
-- [ ] Listing routers (CRUD, search, filter)
-- [ ] Category routers
-- [ ] Cart routers
-- [ ] Order routers
-- [ ] Review routers
-- [ ] Admin routers
-- [ ] Notification routers
-- [ ] Stripe routers
+- [x] Auth routers (login, logout, register)
+- [x] User routers (profile, settings)
+- [x] Shop routers (CRUD, profile)
+- [x] Listing routers (CRUD, search, filter)
+- [x] Category routers
+- [x] Cart routers
+- [x] Order routers
+- [x] Review routers
+- [x] Admin routers
+- [x] Notification routers
+- [x] Stripe routers
 
 ### Frontend Pages
-- [ ] Home page
+- [x] Home page
 - [ ] Auth pages (login, register, role selection)
-- [ ] Browse/Search page
+- [x] Browse/Search page
 - [ ] Listing detail page
 - [ ] Shop profile page
 - [ ] Cart page
