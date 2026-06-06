@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import SellerDashboard from "./pages/SellerDashboard";
 import ShopProfile from "./pages/ShopProfile";
 import Header from "./components/Header";
+import CreateListing from "./pages/CreateListing";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path={"/checkout/:orderNumber"} component={Checkout} />
       <Route path={"/seller/dashboard"} component={SellerDashboard} />
       <Route path={"/shop/:id"} component={ShopProfile} />
+      <Route path={"/create-listing"} component={CreateListing} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
