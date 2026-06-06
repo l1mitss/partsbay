@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import SellerDashboard from "./pages/SellerDashboard";
 import ShopProfile from "./pages/ShopProfile";
+import Header from "./components/Header";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <Header />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
