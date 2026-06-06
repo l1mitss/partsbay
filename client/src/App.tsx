@@ -10,6 +10,7 @@ import ListingDetail from "./pages/ListingDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import SellerDashboard from "./pages/SellerDashboard";
+import ShopProfile from "./pages/ShopProfile";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path={"/cart"} component={Cart} />
       <Route path={"/checkout/:orderNumber"} component={Checkout} />
       <Route path={"/seller/dashboard"} component={SellerDashboard} />
+      <Route path={"/shop/:id"} component={ShopProfile} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
