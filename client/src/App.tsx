@@ -13,6 +13,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import ShopProfile from "./pages/ShopProfile";
 import Header from "./components/Header";
 import CreateListing from "./pages/CreateListing";
+import RoleSelection from "./pages/RoleSelection";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path={"/seller/dashboard"} component={SellerDashboard} />
       <Route path={"/shop/:id"} component={ShopProfile} />
       <Route path={"/create-listing"} component={CreateListing} />
+      <Route path={"/role-selection"} component={RoleSelection} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
