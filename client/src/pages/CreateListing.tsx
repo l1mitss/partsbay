@@ -55,7 +55,40 @@ export default function CreateListing() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!formData.title.trim()) {
+      alert("Title is required");
+      return;
+    }
+    if (!formData.description.trim()) {
+      alert("Description is required");
+      return;
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      alert("Valid price is required");
+      return;
+    }
+    if (photos.length === 0) {
+      alert("At least one photo is required");
+      return;
+    }
+    if (photos.length > 5) {
+      alert("Maximum 5 photos allowed");
+      return;
+    }
+
     try {
+      // Upload photos first
+      const photoUrls: string[] = [];
+      for (const photo of photos) {
+        const formDataPhoto = new FormData();
+        formDataPhoto.append("file", photo);
+        // In real implementation, this would upload to S3
+        // For now, we'll create object URLs
+        photoUrls.push(URL.createObjectURL(photo));
+      }
+
       await createListing.mutateAsync({
         categoryId: parseInt(formData.categoryId),
         title: formData.title,
@@ -70,6 +103,7 @@ export default function CreateListing() {
       navigate("/seller/dashboard");
     } catch (error) {
       console.error("Error creating listing:", error);
+      alert("Failed to create listing. Please try again.");
     }
   };
 
