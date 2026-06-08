@@ -17,6 +17,7 @@ import RoleSelection from "./pages/RoleSelection";
 import OrderHistory from "./pages/OrderHistory";
 import Reviews from "./pages/Reviews";
 import AdminPanel from "./pages/AdminPanel";
+import Notifications from "./pages/Notifications";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
       <Route path={"/orders"} component={OrderHistory} />
       <Route path={"/reviews"} component={Reviews} />
       <Route path="/admin" component={AdminPanel} />
+      <Route path="/notifications" component={Notifications} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
