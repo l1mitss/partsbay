@@ -16,6 +16,7 @@ import CreateListing from "./pages/CreateListing";
 import RoleSelection from "./pages/RoleSelection";
 import OrderHistory from "./pages/OrderHistory";
 import Reviews from "./pages/Reviews";
+import AdminPanel from "./pages/AdminPanel";
 
 function Router() {
   return (
@@ -31,6 +32,7 @@ function Router() {
       <Route path={"/role-selection"} component={RoleSelection} />
       <Route path={"/orders"} component={OrderHistory} />
       <Route path={"/reviews"} component={Reviews} />
+      <Route path="/admin" component={AdminPanel} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
