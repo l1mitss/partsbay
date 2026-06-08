@@ -15,6 +15,7 @@ import Header from "./components/Header";
 import CreateListing from "./pages/CreateListing";
 import RoleSelection from "./pages/RoleSelection";
 import OrderHistory from "./pages/OrderHistory";
+import Reviews from "./pages/Reviews";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path={"/create-listing"} component={CreateListing} />
       <Route path={"/role-selection"} component={RoleSelection} />
       <Route path={"/orders"} component={OrderHistory} />
+      <Route path={"/reviews"} component={Reviews} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
