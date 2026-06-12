@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Search, ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -9,6 +9,31 @@ export default function Header() {
   const [, navigate] = useLocation();
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+
+  const buyerLinks = [
+    { label: "Browse Listings", href: "/search" },
+    { label: "My Orders", href: "/order-history" },
+    { label: "My Wishlist", href: "/wishlist" },
+    { label: "Compare Parts", href: "/compare" },
+    { label: "My Reviews", href: "/reviews" },
+    { label: "Messages", href: "/messages" },
+  ];
+
+  const sellerLinks = [
+    { label: "Dashboard", href: "/seller-dashboard" },
+    { label: "Create Listing", href: "/create-listing" },
+    { label: "My Listings", href: "/seller-dashboard" },
+    { label: "Bulk Upload", href: "/bulk-upload" },
+    { label: "Inventory", href: "/inventory" },
+    { label: "Analytics", href: "/seller-analytics" },
+    { label: "Verification", href: "/seller-verification" },
+    { label: "Shop Setup", href: "/shop-setup" },
+  ];
+
+  const adminLinks = user?.role === "admin" ? [
+    { label: "Admin Panel", href: "/admin" },
+  ] : [];
 
   return (
     <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
@@ -23,19 +48,65 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          <button
-            onClick={() => navigate("/search")}
-            className="text-slate-300 hover:text-white transition"
-          >
-            Browse
-          </button>
-          {user?.role === "seller" && (
-            <button
-              onClick={() => navigate("/seller/dashboard")}
-              className="text-slate-300 hover:text-white transition"
-            >
-              Seller
+          {/* Browse Dropdown */}
+          <div className="relative group">
+            <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+              Browse
+              <ChevronDown size={16} />
             </button>
+            <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
+              {buyerLinks.map((link) => (
+                <button
+                  key={link.href}
+                  onClick={() => navigate(link.href)}
+                  className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Seller Dropdown */}
+          {user?.role === "seller" && (
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+                Seller
+                <ChevronDown size={16} />
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
+                {sellerLinks.map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => navigate(link.href)}
+                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Admin Dropdown */}
+          {user?.role === "admin" && (
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+                Admin
+                <ChevronDown size={16} />
+              </button>
+              <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
+                {adminLinks.map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => navigate(link.href)}
+                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
@@ -59,14 +130,20 @@ export default function Header() {
                 </button>
                 <div className="absolute right-0 mt-2 w-48 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
                   <button
-                    onClick={() => navigate("/seller/dashboard")}
+                    onClick={() => navigate("/messages")}
                     className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600"
                   >
-                    Dashboard
+                    Messages
+                  </button>
+                  <button
+                    onClick={() => navigate("/notifications")}
+                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600"
+                  >
+                    Notifications
                   </button>
                   <button
                     onClick={() => logout()}
-                    className="block w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-slate-600 flex items-center gap-2"
+                    className="block w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-slate-600 flex items-center gap-2 rounded-b-lg"
                   >
                     <LogOut size={16} />
                     Logout
@@ -96,36 +173,122 @@ export default function Header() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-slate-700 border-t border-slate-600 p-4 space-y-3">
-          <button
-            onClick={() => {
-              navigate("/search");
-              setMobileMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded"
-          >
-            Browse
-          </button>
+          {/* Browse Section */}
+          <div>
+            <button
+              onClick={() => setDropdownOpen(dropdownOpen === "browse" ? null : "browse")}
+              className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded font-semibold flex items-center justify-between"
+            >
+              Browse
+              <ChevronDown size={16} className={dropdownOpen === "browse" ? "rotate-180" : ""} />
+            </button>
+            {dropdownOpen === "browse" && (
+              <div className="pl-4 space-y-2 mt-2">
+                {buyerLinks.map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => {
+                      navigate(link.href);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded text-sm"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Seller Section */}
           {user?.role === "seller" && (
-            <button
-              onClick={() => {
-                navigate("/seller/dashboard");
-                setMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded"
-            >
-              Seller Dashboard
-            </button>
+            <div>
+              <button
+                onClick={() => setDropdownOpen(dropdownOpen === "seller" ? null : "seller")}
+                className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded font-semibold flex items-center justify-between"
+              >
+                Seller Tools
+                <ChevronDown size={16} className={dropdownOpen === "seller" ? "rotate-180" : ""} />
+              </button>
+              {dropdownOpen === "seller" && (
+                <div className="pl-4 space-y-2 mt-2">
+                  {sellerLinks.map((link) => (
+                    <button
+                      key={link.href}
+                      onClick={() => {
+                        navigate(link.href);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded text-sm"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
+
+          {/* Admin Section */}
+          {user?.role === "admin" && (
+            <div>
+              <button
+                onClick={() => setDropdownOpen(dropdownOpen === "admin" ? null : "admin")}
+                className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded font-semibold flex items-center justify-between"
+              >
+                Admin
+                <ChevronDown size={16} className={dropdownOpen === "admin" ? "rotate-180" : ""} />
+              </button>
+              {dropdownOpen === "admin" && (
+                <div className="pl-4 space-y-2 mt-2">
+                  {adminLinks.map((link) => (
+                    <button
+                      key={link.href}
+                      onClick={() => {
+                        navigate(link.href);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded text-sm"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* User Actions */}
           {user ? (
-            <button
-              onClick={() => {
-                logout();
-                setMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-slate-600 rounded"
-            >
-              Logout
-            </button>
+            <>
+              <button
+                onClick={() => {
+                  navigate("/messages");
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded"
+              >
+                Messages
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/notifications");
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 rounded"
+              >
+                Notifications
+              </button>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-slate-600 rounded"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <Button
               onClick={() => (window.location.href = getLoginUrl())}
