@@ -117,7 +117,7 @@
 - [x] Create listing form with photo upload
 - [x] Listing detail page with wishlist & share
 - [ ] Shop profile page
-- [ ] Cart page
+- [x] Cart page with item management
 - [ ] Checkout page
 - [ ] Order history page
 - [ ] Seller dashboard

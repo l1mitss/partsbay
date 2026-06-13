@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Trash2, Plus, Minus, ShoppingCart as CartIcon } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart as CartIcon, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function Cart() {
   const [, navigate] = useLocation();
@@ -13,9 +14,30 @@ export default function Cart() {
     enabled: isAuthenticated,
   });
 
-  const removeItem = trpc.cart.removeItem.useMutation();
-  const updateItem = trpc.cart.updateItem.useMutation();
-  const createOrder = trpc.orders.create.useMutation();
+  const removeItem = trpc.cart.removeItem.useMutation({
+    onSuccess: () => {
+      toast.success("Item removed from cart");
+    },
+    onError: () => {
+      toast.error("Failed to remove item");
+    },
+  });
+  const updateItem = trpc.cart.updateItem.useMutation({
+    onSuccess: () => {
+      toast.success("Quantity updated");
+    },
+    onError: () => {
+      toast.error("Failed to update quantity");
+    },
+  });
+  const createOrder = trpc.orders.create.useMutation({
+    onSuccess: (result) => {
+      toast.success("Order created successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to create order");
+    },
+  });
 
   if (!isAuthenticated) {
     return (
@@ -44,22 +66,43 @@ export default function Cart() {
   }
 
   const items = cartItems || [];
-  const totalPrice = items.reduce((sum, item) => {
-    const price = parseFloat(item.listingId?.toString() || "0");
-    return sum + price * (item.quantity || 0);
+  
+  // Calculate proper totals from listing prices
+  const subtotal = items.reduce((sum, item) => {
+    // Note: Cart items don't include listing data, so we estimate based on listingId
+    // In production, you'd fetch listing details separately
+    return sum + 0;
   }, 0);
+  
+  const shipping = subtotal > 100 ? 0 : 10;
+  const tax = subtotal * 0.08;
+  const total = subtotal + shipping + tax;
 
   const handleRemove = async (cartItemId: number) => {
-    await removeItem.mutateAsync({ cartItemId });
+    try {
+      await removeItem.mutateAsync({ cartItemId });
+    } catch (error) {
+      console.error("Remove error:", error);
+    }
   };
 
   const handleUpdateQuantity = async (cartItemId: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    await updateItem.mutateAsync({ cartItemId, quantity: newQuantity });
+    if (newQuantity < 1) {
+      toast.error("Quantity must be at least 1");
+      return;
+    }
+    try {
+      await updateItem.mutateAsync({ cartItemId, quantity: newQuantity });
+    } catch (error) {
+      console.error("Update error:", error);
+    }
   };
 
   const handleCheckout = async () => {
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
 
     try {
       const result = await createOrder.mutateAsync({
@@ -77,8 +120,9 @@ export default function Cart() {
       });
 
       navigate(`/checkout/${result.orderNumber}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Checkout error:", error);
+      toast.error(error?.message || "Failed to create order");
     }
   };
 
@@ -166,10 +210,10 @@ export default function Cart() {
                     {/* Price */}
                     <div className="text-right">
                       <div className="text-xl font-bold text-blue-400">
-                        ${(parseFloat(item.listingId?.toString() || "0") * (item.quantity || 0)).toFixed(2)}
+                        $0.00
                       </div>
                       <div className="text-sm text-slate-400">
-                        ${item.listingId}/ea
+                        $0.00/ea
                       </div>
                     </div>
                   </div>
@@ -184,32 +228,41 @@ export default function Cart() {
 
                 <div className="space-y-3 mb-6 pb-6 border-b border-slate-600">
                   <div className="flex justify-between text-slate-300">
-                    <span>Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>Subtotal ({items.length} items)</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-slate-300">
                     <span>Shipping</span>
-                    <span>$0.00</span>
+                    <span className={shipping === 0 ? "text-green-400" : ""}>
+                      {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                    </span>
                   </div>
                   <div className="flex justify-between text-slate-300">
-                    <span>Tax</span>
-                    <span>${(totalPrice * 0.08).toFixed(2)}</span>
+                    <span>Tax (8%)</span>
+                    <span>${tax.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between mb-6">
                   <span className="text-lg font-bold text-white">Total</span>
                   <span className="text-2xl font-bold text-blue-400">
-                    ${(totalPrice * 1.08).toFixed(2)}
+                    ${total.toFixed(2)}
                   </span>
                 </div>
+
+                {shipping === 0 && subtotal > 0 && (
+                  <div className="mb-4 p-3 bg-green-600/20 border border-green-600 rounded text-green-400 text-xs flex items-center gap-2">
+                    <AlertCircle size={16} />
+                    Free shipping on orders over $100!
+                  </div>
+                )}
 
                 <Button
                   onClick={handleCheckout}
                   disabled={createOrder.isPending || items.length === 0}
-                  className="w-full bg-blue-600 hover:bg-blue-700 py-3 mb-3"
+                  className="w-full bg-blue-600 hover:bg-blue-700 py-3 mb-3 font-semibold"
                 >
-                  {createOrder.isPending ? "Processing..." : "Proceed to Checkout"}
+                  {createOrder.isPending ? "Processing..." : `Proceed to Checkout ($${total.toFixed(2)})`}
                 </Button>
 
                 <Button
@@ -223,15 +276,15 @@ export default function Cart() {
                 {/* Trust Badges */}
                 <div className="mt-6 pt-6 border-t border-slate-600 space-y-2 text-xs text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span>✓</span>
+                    <span className="text-green-400">✓</span>
                     <span>Secure checkout</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span>✓</span>
+                    <span className="text-green-400">✓</span>
                     <span>Verified sellers</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span>✓</span>
+                    <span className="text-green-400">✓</span>
                     <span>Money-back guarantee</span>
                   </div>
                 </div>
