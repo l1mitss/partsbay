@@ -123,6 +123,7 @@
 - [ ] Seller dashboard
 - [ ] Admin dashboard
 - [ ] User profile page
+- [x] Reviews page with filtering & sorting
 - [ ] 404 page
 
 ### Frontend Components
