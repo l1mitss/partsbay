@@ -119,7 +119,7 @@
 - [ ] Shop profile page
 - [x] Cart page with item management
 - [ ] Checkout page
-- [ ] Order history page
+- [x] Order history page with tracking
 - [ ] Seller dashboard
 - [ ] Admin dashboard
 - [ ] User profile page

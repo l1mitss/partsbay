@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Package, ChevronRight, Calendar, DollarSign, Truck } from "lucide-react";
+import { Package, ChevronRight, Calendar, DollarSign, Truck, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function OrderHistory() {
   const [, navigate] = useLocation();
@@ -32,28 +33,49 @@ export default function OrderHistory() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-500/20 text-yellow-300";
+        return "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30";
       case "processing":
-        return "bg-blue-500/20 text-blue-300";
+        return "bg-blue-500/20 text-blue-300 border border-blue-500/30";
       case "shipped":
-        return "bg-purple-500/20 text-purple-300";
+        return "bg-purple-500/20 text-purple-300 border border-purple-500/30";
       case "delivered":
-        return "bg-green-500/20 text-green-300";
+        return "bg-green-500/20 text-green-300 border border-green-500/30";
       case "cancelled":
-        return "bg-red-500/20 text-red-300";
+        return "bg-red-500/20 text-red-300 border border-red-500/30";
       default:
-        return "bg-slate-500/20 text-slate-300";
+        return "bg-slate-500/20 text-slate-300 border border-slate-500/30";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "pending":
+        return <AlertCircle size={16} />;
+      case "processing":
+        return <Package size={16} />;
       case "shipped":
         return <Truck size={16} />;
       case "delivered":
         return <Package size={16} />;
       default:
         return <Package size={16} />;
+    }
+  };
+
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Waiting for seller to process";
+      case "processing":
+        return "Seller is preparing your order";
+      case "shipped":
+        return "On its way to you";
+      case "delivered":
+        return "Successfully delivered";
+      case "cancelled":
+        return "Order was cancelled";
+      default:
+        return "Unknown status";
     }
   };
 
@@ -110,12 +132,17 @@ export default function OrderHistory() {
                       </div>
                     </div>
 
-                    <Badge className={`${getStatusColor(order.status || "pending")} border-0`}>
-                      <span className="flex items-center gap-1">
-                        {getStatusIcon(order.status || "pending")}
-                        {(order.status || "pending").charAt(0).toUpperCase() + (order.status || "pending").slice(1)}
+                    <div className="flex items-center gap-4">
+                      <Badge className={getStatusColor(order.status || "pending")}>
+                        <span className="flex items-center gap-1">
+                          {getStatusIcon(order.status || "pending")}
+                          {(order.status || "pending").charAt(0).toUpperCase() + (order.status || "pending").slice(1)}
+                        </span>
+                      </Badge>
+                      <span className="text-xs text-slate-400">
+                        {getStatusDescription(order.status || "pending")}
                       </span>
-                    </Badge>
+                    </div>
                   </div>
 
                   <ChevronRight
@@ -128,6 +155,35 @@ export default function OrderHistory() {
 
                 {selectedOrder === order.id && (
                   <div className="mt-6 pt-6 border-t border-slate-600">
+                    {/* Order Timeline */}
+                    <div className="mb-6 p-4 bg-slate-600/30 rounded-lg">
+                      <h4 className="text-sm font-bold text-white mb-3">Order Status Timeline</h4>
+                      <div className="space-y-2 text-xs text-slate-400">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span>Order placed: {new Date(order.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        {order.status !== "pending" && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>Processing started</span>
+                          </div>
+                        )}
+                        {(order.status === "shipped" || order.status === "delivered") && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                            <span>Shipped</span>
+                          </div>
+                        )}
+                        {order.status === "delivered" && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>Delivered</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     <h4 className="text-sm font-bold text-white mb-4">Order Items</h4>
                     <div className="space-y-3">
                       {(order as any).items && (order as any).items.length > 0 ? (
@@ -163,13 +219,30 @@ export default function OrderHistory() {
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-3">
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <Button 
+                        onClick={() => toast.info("Order details page coming soon")}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
                         View Details
                       </Button>
-                      <Button variant="outline" className="border-slate-500 text-slate-300 hover:bg-slate-600">
+                      <Button 
+                        onClick={() => toast.info("Messaging feature coming soon")}
+                        variant="outline" 
+                        className="border-slate-500 text-slate-300 hover:bg-slate-600"
+                      >
                         Contact Seller
                       </Button>
                     </div>
+
+                    {order.status === "delivered" && (
+                      <Button 
+                        onClick={() => toast.info("Review feature coming soon")}
+                        variant="outline" 
+                        className="w-full mt-3 border-slate-500 text-slate-300 hover:bg-slate-600"
+                      >
+                        Leave Review
+                      </Button>
+                    )}
                   </div>
                 )}
               </Card>
