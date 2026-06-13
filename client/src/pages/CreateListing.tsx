@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function CreateListing() {
   const [, navigate] = useLocation();
@@ -22,8 +23,21 @@ export default function CreateListing() {
     stock: "1",
   });
   const [photos, setPhotos] = useState<File[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const createListing = trpc.listings.create.useMutation();
+  const uploadPhotos = trpc.listings.uploadPhotos.useMutation();
+  const { data: categoriesData } = trpc.categories.list.useQuery();
+
+  useEffect(() => {
+    if (categoriesData) {
+      setCategories(categoriesData);
+      if (categoriesData.length > 0) {
+        setFormData((prev) => ({ ...prev, categoryId: categoriesData[0].id.toString() }));
+      }
+    }
+  }, [categoriesData]);
 
   if (!user) {
     return (
@@ -58,38 +72,31 @@ export default function CreateListing() {
     
     // Validation
     if (!formData.title.trim()) {
-      alert("Title is required");
+      toast.error("Title is required");
       return;
     }
     if (!formData.description.trim()) {
-      alert("Description is required");
+      toast.error("Description is required");
       return;
     }
     if (!formData.price || parseFloat(formData.price) <= 0) {
-      alert("Valid price is required");
+      toast.error("Valid price is required");
       return;
     }
     if (photos.length === 0) {
-      alert("At least one photo is required");
+      toast.error("At least one photo is required");
       return;
     }
     if (photos.length > 5) {
-      alert("Maximum 5 photos allowed");
+      toast.error("Maximum 5 photos allowed");
       return;
     }
 
     try {
-      // Upload photos first
-      const photoUrls: string[] = [];
-      for (const photo of photos) {
-        const formDataPhoto = new FormData();
-        formDataPhoto.append("file", photo);
-        // In real implementation, this would upload to S3
-        // For now, we'll create object URLs
-        photoUrls.push(URL.createObjectURL(photo));
-      }
+      setIsLoading(true);
 
-      await createListing.mutateAsync({
+      // Step 1: Create listing
+      const listingResponse = await createListing.mutateAsync({
         categoryId: parseInt(formData.categoryId),
         title: formData.title,
         description: formData.description,
@@ -100,10 +107,49 @@ export default function CreateListing() {
         carYear: formData.carYear ? parseInt(formData.carYear) : undefined,
         stock: parseInt(formData.stock),
       });
-      navigate("/seller/dashboard");
-    } catch (error) {
+
+      // Get the listing ID from the response (or query for it)
+      // For now, we'll fetch the latest listing
+      const utils = trpc.useUtils();
+      const listings = await utils.listings.search.fetch({ limit: 1 });
+      const listingId = listings?.[0]?.id;
+
+      if (!listingId) {
+        toast.error("Failed to get listing ID");
+        return;
+      }
+
+      // Step 2: Upload photos
+      const photoData = await Promise.all(
+        photos.map(async (photo) => {
+          const arrayBuffer = await photo.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuffer);
+          let base64 = "";
+          for (let i = 0; i < bytes.length; i++) {
+            base64 += String.fromCharCode(bytes[i]);
+          }
+          return {
+            data: btoa(base64),
+            name: photo.name,
+          };
+        })
+      );
+
+      if (photoData.length > 0) {
+        await uploadPhotos.mutateAsync({
+          listingId,
+          photos: photoData,
+        });
+      }
+
+      toast.success("Listing created successfully!");
+      setTimeout(() => navigate("/seller/dashboard"), 500);
+    } catch (error: any) {
       console.error("Error creating listing:", error);
-      alert("Failed to create listing. Please try again.");
+      const errorMsg = error?.message || "Failed to create listing. Please try again.";
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,12 +173,11 @@ export default function CreateListing() {
                   onChange={handleInputChange}
                   className="w-full bg-slate-600 border border-slate-500 text-white rounded px-4 py-2"
                 >
-                  <option value="1">Engine</option>
-                  <option value="2">Brakes</option>
-                  <option value="3">Suspension</option>
-                  <option value="4">Electrical</option>
-                  <option value="5">Body</option>
-                  <option value="6">Interior</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id.toString()}>
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -251,10 +296,10 @@ export default function CreateListing() {
             </div>
           </Card>
 
-          {/* Photos - Part 1 (will continue in next sprint) */}
+          {/* Photos */}
           <Card className="bg-slate-700 border-slate-600 p-6">
             <h2 className="text-2xl font-bold text-white mb-6">Photos</h2>
-            <div className="border-2 border-dashed border-slate-500 rounded-lg p-8 text-center">
+            <div className="border-2 border-dashed border-slate-500 rounded-lg p-8 text-center hover:border-slate-400 transition">
               <Upload size={32} className="mx-auto mb-2 text-slate-400" />
               <p className="text-slate-300 mb-2">Drag & drop photos or click to upload</p>
               <p className="text-sm text-slate-400 mb-4">Max 5 photos, 10MB each</p>
@@ -303,16 +348,17 @@ export default function CreateListing() {
           <div className="flex gap-4">
             <Button
               type="submit"
-              disabled={createListing.isPending}
+              disabled={isLoading || createListing.isPending || uploadPhotos.isPending}
               className="flex-1 bg-blue-600 hover:bg-blue-700 py-3"
             >
-              {createListing.isPending ? "Creating..." : "Create Listing"}
+              {isLoading ? "Creating..." : "Create Listing"}
             </Button>
             <Button
               type="button"
               onClick={() => navigate("/seller/dashboard")}
               variant="outline"
               className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600"
+              disabled={isLoading}
             >
               Cancel
             </Button>

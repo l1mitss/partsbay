@@ -114,6 +114,7 @@
 - [x] Home page
 - [ ] Auth pages (login, register, role selection)
 - [x] Browse/Search page
+- [x] Create listing form with photo upload
 - [ ] Listing detail page
 - [ ] Shop profile page
 - [ ] Cart page
