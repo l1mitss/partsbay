@@ -115,7 +115,7 @@
 - [ ] Auth pages (login, register, role selection)
 - [x] Browse/Search page
 - [x] Create listing form with photo upload
-- [ ] Listing detail page
+- [x] Listing detail page with wishlist & share
 - [ ] Shop profile page
 - [ ] Cart page
 - [ ] Checkout page

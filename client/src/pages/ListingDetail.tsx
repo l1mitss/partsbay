@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Star, ShoppingCart, Share2, Flag, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ShoppingCart, Share2, Flag, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function ListingDetail() {
   const [location, navigate] = useLocation();
   const listingId = parseInt(location.split("/").pop() || "0");
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const { user } = useAuth();
 
   const { data: listing, isLoading: listingLoading } = trpc.listings.getById.useQuery({
@@ -47,10 +49,38 @@ export default function ListingDetail() {
 
   const handleAddToCart = async () => {
     if (!user) {
-      navigate("/login");
+      toast.error("Please log in to add to cart");
       return;
     }
-    await addToCart.mutateAsync({ listingId, quantity });
+    try {
+      await addToCart.mutateAsync({ listingId, quantity });
+      toast.success(`Added ${quantity} item(s) to cart`);
+    } catch (error) {
+      toast.error("Failed to add to cart");
+    }
+  };
+
+  const handleWishlist = () => {
+    if (!user) {
+      toast.error("Please log in to save to wishlist");
+      return;
+    }
+    setIsWishlisted(!isWishlisted);
+    toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({
+        title: listing.title,
+        text: `Check out this part: ${listing.title}`,
+        url: url,
+      });
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success("Link copied to clipboard");
+    }
   };
 
   const nextPhoto = () => {
@@ -204,18 +234,33 @@ export default function ListingDetail() {
               </Button>
 
               <Button
+                onClick={handleShare}
                 variant="outline"
                 className="w-full border-slate-600 text-slate-300 hover:bg-slate-600 flex items-center justify-center gap-2"
               >
                 <Share2 size={20} />
                 Share
               </Button>
+
+              <Button
+                onClick={handleWishlist}
+                variant="outline"
+                className={`w-full flex items-center justify-center gap-2 mt-3 ${
+                  isWishlisted
+                    ? "bg-red-600/20 border-red-600 text-red-400 hover:bg-red-600/30"
+                    : "border-slate-600 text-slate-300 hover:bg-slate-600"
+                }`}
+              >
+                <Heart size={20} fill={isWishlisted ? "currentColor" : "none"} />
+                {isWishlisted ? "Saved" : "Save to Wishlist"}
+              </Button>
             </div>
 
             {/* Report */}
             <Button
+              onClick={() => toast.info("Report feature coming soon")}
               variant="ghost"
-              className="w-full text-red-400 hover:text-red-300 hover:bg-slate-700 flex items-center justify-center gap-2"
+              className="w-full text-red-400 hover:text-red-300 hover:bg-slate-700 flex items-center justify-center gap-2 mt-3"
             >
               <Flag size={20} />
               Report Listing
