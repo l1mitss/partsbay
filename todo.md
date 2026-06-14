@@ -120,7 +120,7 @@
 - [x] Cart page with item management
 - [ ] Checkout page
 - [x] Order history page with tracking
-- [ ] Seller dashboard
+- [x] Seller dashboard with stats & orders
 - [ ] Admin dashboard
 - [ ] User profile page
 - [x] Reviews page with filtering & sorting

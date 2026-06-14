@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Plus, Edit2, Trash2, Eye, TrendingUp, Package, Star, DollarSign } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, TrendingUp, Package, Star, DollarSign, BarChart3, AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function SellerDashboard() {
   const [, navigate] = useLocation();
@@ -61,38 +63,48 @@ export default function SellerDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-slate-700 border-slate-600 p-6">
+          <Card className="bg-slate-700 border-slate-600 p-6 hover:border-green-500 transition">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Total Sales</p>
                 <p className="text-3xl font-bold text-white">$12,450</p>
+                <p className="text-xs text-green-400 mt-2">↑ 12% from last month</p>
               </div>
               <DollarSign size={32} className="text-green-400" />
             </div>
           </Card>
-          <Card className="bg-slate-700 border-slate-600 p-6">
+          <Card className="bg-slate-700 border-slate-600 p-6 hover:border-blue-500 transition">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Active Listings</p>
                 <p className="text-3xl font-bold text-white">{listings?.length || 0}</p>
+                <p className="text-xs text-blue-400 mt-2">Ready to sell</p>
               </div>
               <Package size={32} className="text-blue-400" />
             </div>
           </Card>
-          <Card className="bg-slate-700 border-slate-600 p-6">
+          <Card className="bg-slate-700 border-slate-600 p-6 hover:border-yellow-500 transition">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Shop Rating</p>
-                <p className="text-3xl font-bold text-white">{shop.averageRating || "N/A"}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-3xl font-bold text-white">{shop.averageRating || "N/A"}</p>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={16} className={i < Math.round(parseFloat(shop.averageRating || "0")) ? "fill-yellow-400 text-yellow-400" : "text-slate-600"} />
+                    ))}
+                  </div>
+                </div>
               </div>
               <Star size={32} className="text-yellow-400" />
             </div>
           </Card>
-          <Card className="bg-slate-700 border-slate-600 p-6">
+          <Card className="bg-slate-700 border-slate-600 p-6 hover:border-purple-500 transition">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Total Reviews</p>
-                <p className="text-3xl font-bold text-white">{shop.totalReviews}</p>
+                <p className="text-3xl font-bold text-white">{shop.totalReviews || 0}</p>
+                <p className="text-xs text-purple-400 mt-2">Customer feedback</p>
               </div>
               <TrendingUp size={32} className="text-purple-400" />
             </div>
@@ -151,23 +163,31 @@ export default function SellerDashboard() {
                 <h2 className="text-2xl font-bold text-white mb-4">Recent Activity</h2>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-4 border-b border-slate-600">
-                    <div>
-                      <p className="font-semibold text-white">Order #ORD-123456</p>
-                      <p className="text-sm text-slate-400">Brake Pads x2</p>
+                    <div className="flex items-start gap-3 flex-1">
+                      <CheckCircle size={20} className="text-green-400 mt-1" />
+                      <div>
+                        <p className="font-semibold text-white">Order #ORD-123456</p>
+                        <p className="text-sm text-slate-400">Brake Pads x2 • Shipped</p>
+                      </div>
                     </div>
                     <span className="text-green-400 font-semibold">+$89.99</span>
                   </div>
                   <div className="flex items-center justify-between pb-4 border-b border-slate-600">
-                    <div>
-                      <p className="font-semibold text-white">New Review</p>
-                      <p className="text-sm text-slate-400">5 stars - Great quality!</p>
+                    <div className="flex items-start gap-3 flex-1">
+                      <Star size={20} className="text-yellow-400 fill-yellow-400 mt-1" />
+                      <div>
+                        <p className="font-semibold text-white">New 5-Star Review</p>
+                        <p className="text-sm text-slate-400">Great quality and fast shipping!</p>
+                      </div>
                     </div>
-                    <span className="text-yellow-400">★★★★★</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-white">Order #ORD-123455</p>
-                      <p className="text-sm text-slate-400">Air Filter x1</p>
+                    <div className="flex items-start gap-3 flex-1">
+                      <CheckCircle size={20} className="text-green-400 mt-1" />
+                      <div>
+                        <p className="font-semibold text-white">Order #ORD-123455</p>
+                        <p className="text-sm text-slate-400">Air Filter x1 • Delivered</p>
+                      </div>
                     </div>
                     <span className="text-green-400 font-semibold">+$24.99</span>
                   </div>
@@ -191,6 +211,14 @@ export default function SellerDashboard() {
                 >
                   <Edit2 size={20} />
                   Edit Shop
+                </Button>
+                <Button
+                  onClick={() => toast.info("Analytics coming soon")}
+                  variant="outline"
+                  className="w-full border-slate-600 text-slate-300 hover:bg-slate-600 flex items-center justify-center gap-2"
+                >
+                  <BarChart3 size={20} />
+                  View Analytics
                 </Button>
               </div>
             </Card>
@@ -237,6 +265,7 @@ export default function SellerDashboard() {
                           onClick={() => navigate(`/listing/${listing.id}`)}
                           variant="outline"
                           className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600 flex items-center justify-center gap-1"
+                          title="View listing"
                         >
                           <Eye size={16} />
                           View
@@ -245,13 +274,16 @@ export default function SellerDashboard() {
                           onClick={() => navigate(`/edit-listing/${listing.id}`)}
                           variant="outline"
                           className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600 flex items-center justify-center gap-1"
+                          title="Edit listing"
                         >
                           <Edit2 size={16} />
                           Edit
                         </Button>
                         <Button
+                          onClick={() => toast.info("Delete feature coming soon")}
                           variant="outline"
                           className="flex-1 border-red-600 text-red-400 hover:bg-red-600/20 flex items-center justify-center gap-1"
+                          title="Delete listing"
                         >
                           <Trash2 size={16} />
                           Delete
@@ -281,12 +313,41 @@ export default function SellerDashboard() {
             <h2 className="text-2xl font-bold text-white mb-6">Recent Orders</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-4 border-b border-slate-600">
-                <div>
-                  <p className="font-semibold text-white">Order #ORD-123456</p>
-                  <p className="text-sm text-slate-400">3 items • Shipped</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold text-white">Order #ORD-123456</p>
+                    <Badge className="bg-green-600/20 text-green-300 border-0 text-xs">Shipped</Badge>
+                  </div>
+                  <p className="text-sm text-slate-400">3 items • Brake Pads, Air Filter, Oil Filter</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-white">$89.99</p>
+                  <p className="text-sm text-green-400">Paid</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pb-4 border-b border-slate-600">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold text-white">Order #ORD-123455</p>
+                    <Badge className="bg-blue-600/20 text-blue-300 border-0 text-xs">Processing</Badge>
+                  </div>
+                  <p className="text-sm text-slate-400">2 items • Battery, Spark Plugs</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-white">$45.50</p>
+                  <p className="text-sm text-green-400">Paid</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold text-white">Order #ORD-123454</p>
+                    <Badge className="bg-purple-600/20 text-purple-300 border-0 text-xs">Delivered</Badge>
+                  </div>
+                  <p className="text-sm text-slate-400">1 item • Windshield Wipers</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-white">$24.99</p>
                   <p className="text-sm text-green-400">Paid</p>
                 </div>
               </div>
@@ -340,9 +401,10 @@ export default function SellerDashboard() {
                   />
                 </div>
               </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Save Changes
-              </Button>
+              <div className="flex gap-3">
+                <Button className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={() => toast.success("Shop settings saved!")}>Save Changes</Button>
+                <Button variant="outline" className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600" onClick={() => setActiveTab("overview")}>Cancel</Button>
+              </div>
             </div>
           </Card>
         )}
