@@ -128,7 +128,7 @@
 
 ### Frontend Components
 - [x] Navigation header with dropdown menus & icons
-- [ ] Footer
+- [x] Footer with links, social media & trust badges
 - [ ] Search bar
 - [ ] Filter sidebar
 - [ ] Listing card

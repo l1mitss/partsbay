@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import SellerDashboard from "./pages/SellerDashboard";
 import ShopProfile from "./pages/ShopProfile";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import CreateListing from "./pages/CreateListing";
 import RoleSelection from "./pages/RoleSelection";
 import OrderHistory from "./pages/OrderHistory";
@@ -52,6 +53,7 @@ function App() {
           <Toaster />
           <Header />
           <Router />
+          <Footer />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
