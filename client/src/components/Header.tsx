@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Search, ShoppingCart, Menu, X, User, LogOut, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, User, LogOut, ChevronDown, Package, Heart, MessageSquare, Settings, BarChart3, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -12,27 +12,24 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const buyerLinks = [
-    { label: "Browse Listings", href: "/search" },
-    { label: "My Orders", href: "/order-history" },
-    { label: "My Wishlist", href: "/wishlist" },
-    { label: "Compare Parts", href: "/compare" },
-    { label: "My Reviews", href: "/reviews" },
-    { label: "Messages", href: "/messages" },
+    { label: "Browse Listings", href: "/search", icon: Package },
+    { label: "My Orders", href: "/orders", icon: Package },
+    { label: "My Wishlist", href: "/wishlist", icon: Heart },
+    { label: "My Reviews", href: "/reviews", icon: MessageSquare },
+    { label: "Messages", href: "/messages", icon: MessageSquare },
   ];
 
   const sellerLinks = [
-    { label: "Dashboard", href: "/seller-dashboard" },
-    { label: "Create Listing", href: "/create-listing" },
-    { label: "My Listings", href: "/seller-dashboard" },
-    { label: "Bulk Upload", href: "/bulk-upload" },
-    { label: "Inventory", href: "/inventory" },
-    { label: "Analytics", href: "/seller-analytics" },
-    { label: "Verification", href: "/seller-verification" },
-    { label: "Shop Setup", href: "/shop-setup" },
+    { label: "Dashboard", href: "/seller/dashboard", icon: BarChart3 },
+    { label: "Create Listing", href: "/create-listing", icon: Package },
+    { label: "My Listings", href: "/seller/dashboard", icon: Package },
+    { label: "Bulk Upload", href: "/bulk-upload", icon: Upload },
+    { label: "Analytics", href: "/seller-analytics", icon: BarChart3 },
+    { label: "Settings", href: "/seller/dashboard", icon: Settings },
   ];
 
   const adminLinks = user?.role === "admin" ? [
-    { label: "Admin Panel", href: "/admin" },
+    { label: "Admin Panel", href: "/admin", icon: Settings },
   ] : [];
 
   return (
@@ -50,40 +47,48 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-6">
           {/* Browse Dropdown */}
           <div className="relative group">
-            <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+            <button className="flex items-center gap-1 text-slate-300 hover:text-white transition px-3 py-2 rounded hover:bg-slate-700">
               Browse
               <ChevronDown size={16} />
             </button>
-            <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-              {buyerLinks.map((link) => (
-                <button
-                  key={link.href}
-                  onClick={() => navigate(link.href)}
-                  className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
-                >
-                  {link.label}
-                </button>
-              ))}
+            <div className="absolute left-0 mt-0 w-64 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+              {buyerLinks.map((link, idx) => {
+                const Icon = link.icon;
+                return (
+                  <button
+                    key={link.href}
+                    onClick={() => navigate(link.href)}
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-600 transition first:rounded-t-lg last:rounded-b-lg border-b border-slate-600 last:border-b-0"
+                  >
+                    <Icon size={18} className="text-blue-400" />
+                    <span>{link.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Seller Dropdown */}
           {user?.role === "seller" && (
             <div className="relative group">
-              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition px-3 py-2 rounded hover:bg-slate-700">
                 Seller
                 <ChevronDown size={16} />
               </button>
-              <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-                {sellerLinks.map((link) => (
-                  <button
-                    key={link.href}
-                    onClick={() => navigate(link.href)}
-                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {link.label}
-                  </button>
-                ))}
+              <div className="absolute left-0 mt-0 w-64 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+                {sellerLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <button
+                      key={link.href}
+                      onClick={() => navigate(link.href)}
+                      className="flex items-center gap-3 w-full text-left px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-600 transition first:rounded-t-lg last:rounded-b-lg border-b border-slate-600 last:border-b-0"
+                    >
+                      <Icon size={18} className="text-green-400" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -91,20 +96,24 @@ export default function Header() {
           {/* Admin Dropdown */}
           {user?.role === "admin" && (
             <div className="relative group">
-              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition">
+              <button className="flex items-center gap-1 text-slate-300 hover:text-white transition px-3 py-2 rounded hover:bg-slate-700">
                 Admin
                 <ChevronDown size={16} />
               </button>
-              <div className="absolute left-0 mt-0 w-56 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-                {adminLinks.map((link) => (
-                  <button
-                    key={link.href}
-                    onClick={() => navigate(link.href)}
-                    className="block w-full text-left px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {link.label}
-                  </button>
-                ))}
+              <div className="absolute left-0 mt-0 w-64 bg-slate-700 border border-slate-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition z-50">
+                {adminLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <button
+                      key={link.href}
+                      onClick={() => navigate(link.href)}
+                      className="flex items-center gap-3 w-full text-left px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-600 transition first:rounded-t-lg last:rounded-b-lg border-b border-slate-600 last:border-b-0"
+                    >
+                      <Icon size={18} className="text-purple-400" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

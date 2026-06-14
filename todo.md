@@ -127,7 +127,7 @@
 - [ ] 404 page
 
 ### Frontend Components
-- [ ] Navigation header
+- [x] Navigation header with dropdown menus & icons
 - [ ] Footer
 - [ ] Search bar
 - [ ] Filter sidebar
