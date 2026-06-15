@@ -132,7 +132,7 @@
 - [x] Search bar with quick filter tags
 - [x] Filter sidebar with car make/model/price/condition
 - [x] Listing card with wishlist, share & ratings
-- [ ] Image gallery
+- [x] Image gallery with fullscreen & thumbnails
 - [ ] Cart item card
 - [ ] Order card
 - [ ] Review card
