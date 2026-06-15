@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Search as SearchIcon, Filter, X } from "lucide-react";
+import { Search as SearchIcon, Filter, X, ChevronDown, Star, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 
 export default function Search() {
@@ -52,26 +53,48 @@ export default function Search() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Search Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">Search Parts</h1>
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <SearchIcon className="absolute left-3 top-3 text-slate-400" size={20} />
-              <Input
-                type="text"
-                placeholder="Search parts..."
-                value={filters.keyword}
-                onChange={(e) => handleFilterChange("keyword", e.target.value)}
-                className="pl-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-              />
+          <h1 className="text-4xl font-bold text-white mb-6">Search Parts</h1>
+          <div className="bg-slate-700 border border-slate-600 rounded-lg p-4 mb-4">
+            <div className="flex gap-2 mb-4">
+              <div className="flex-1 relative">
+                <SearchIcon className="absolute left-3 top-3 text-slate-400" size={20} />
+                <Input
+                  type="text"
+                  placeholder="Search by part name, make, model..."
+                  value={filters.keyword}
+                  onChange={(e) => handleFilterChange("keyword", e.target.value)}
+                  className="pl-10 bg-slate-600 border-slate-500 text-white placeholder-slate-400"
+                />
+              </div>
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                variant="outline"
+                className="flex gap-2 border-slate-600 text-white hover:bg-slate-600"
+              >
+                <Filter size={20} />
+                {showFilters ? "Hide" : "Show"} Filters
+              </Button>
             </div>
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              variant="outline"
-              className="flex gap-2 border-slate-600 text-white hover:bg-slate-700"
-            >
-              <Filter size={20} />
-              Filters
-            </Button>
+            {/* Quick Filter Tags */}
+            {(filters.keyword || filters.categoryId || filters.carMake || filters.condition) && (
+              <div className="flex flex-wrap gap-2">
+                {filters.keyword && (
+                  <Badge className="bg-blue-600/20 text-blue-300 border-blue-500 border cursor-pointer hover:bg-blue-600/30" onClick={() => handleFilterChange("keyword", "")}>
+                    {filters.keyword} <X size={14} className="ml-1" />
+                  </Badge>
+                )}
+                {filters.carMake && (
+                  <Badge className="bg-green-600/20 text-green-300 border-green-500 border cursor-pointer hover:bg-green-600/30" onClick={() => handleFilterChange("carMake", "")}>
+                    {filters.carMake} <X size={14} className="ml-1" />
+                  </Badge>
+                )}
+                {filters.condition && (
+                  <Badge className="bg-purple-600/20 text-purple-300 border-purple-500 border cursor-pointer hover:bg-purple-600/30" onClick={() => handleFilterChange("condition", "")}>
+                    {filters.condition} <X size={14} className="ml-1" />
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -218,18 +241,23 @@ export default function Search() {
                           {listing.condition}
                         </span>
                       </div>
-                      <div className="text-xs text-slate-400 mb-3">
-                        {listing.carMake && listing.carModel
-                          ? `${listing.carMake} ${listing.carModel}`
-                          : "Universal"}
+                      <div className="text-xs text-slate-400 mb-3 flex items-center gap-1">
+                        {listing.carMake && listing.carModel ? (
+                          <>
+                            <span>{listing.carMake} {listing.carModel}</span>
+                          </>
+                        ) : (
+                          <span>Universal Part</span>
+                        )}
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-yellow-400">
-                          ★ {listing.averageRating || "N/A"}
-                        </span>
-                        <span className="text-slate-400">
-                          {listing.totalReviews} reviews
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                          <span className="text-yellow-400 font-semibold">
+                            {listing.averageRating || "N/A"}
+                          </span>
+                          <span className="text-slate-400">({listing.totalReviews})</span>
+                        </div>
                       </div>
                     </div>
                   </Card>

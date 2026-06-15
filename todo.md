@@ -129,8 +129,8 @@
 ### Frontend Components
 - [x] Navigation header with dropdown menus & icons
 - [x] Footer with links, social media & trust badges
-- [ ] Search bar
-- [ ] Filter sidebar
+- [x] Search bar with quick filter tags
+- [x] Filter sidebar with car make/model/price/condition
 - [ ] Listing card
 - [ ] Image gallery
 - [ ] Cart item card
