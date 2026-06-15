@@ -131,7 +131,7 @@
 - [x] Footer with links, social media & trust badges
 - [x] Search bar with quick filter tags
 - [x] Filter sidebar with car make/model/price/condition
-- [ ] Listing card
+- [x] Listing card with wishlist, share & ratings
 - [ ] Image gallery
 - [ ] Cart item card
 - [ ] Order card
