@@ -133,7 +133,7 @@
 - [x] Filter sidebar with car make/model/price/condition
 - [x] Listing card with wishlist, share & ratings
 - [x] Image gallery with fullscreen & thumbnails
-- [ ] Cart item card
+- [x] Cart item card with quantity controls
 - [ ] Order card
 - [ ] Review card
 - [ ] Rating display
